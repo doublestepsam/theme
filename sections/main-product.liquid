@@ -14,6 +14,19 @@
   endif
   assign display_title = product.title | remove: " - Men's" | remove: " - Women's"
 
+  # The same model in the other gender is a separate product, so offer it —
+  # otherwise a shopper who lands on the wrong one has to start over.
+  assign sibling_handle = ''
+  assign sibling_label = ''
+  if gender_tag == 'mens'
+    assign sibling_handle = product.handle | replace: '-mens', '-womens'
+    assign sibling_label = "Women's"
+  elsif gender_tag == 'womens'
+    assign sibling_handle = product.handle | replace: '-womens', '-mens'
+    assign sibling_label = "Men's"
+  endif
+  assign sibling = all_products[sibling_handle]
+
   assign has_size_option = false
   assign side_position = 0
   # Each variant is one shoe, so a pair costs two of them. Until single-shoe
@@ -69,6 +82,9 @@
             {%- if product.vendor != blank %} / {% endif -%}
           {%- endif -%}
           {{- product.vendor -}}
+          {%- if sibling.title != blank -%}
+            <a class="product-info__switch" href="{{ sibling.url }}">Also in {{ sibling_label }}</a>
+          {%- endif -%}
         </div>
       {%- endif -%}
       <h1>{{ display_title }}</h1>

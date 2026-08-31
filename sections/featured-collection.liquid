@@ -11,7 +11,7 @@
         {%- endif -%}
         <h2>{{ section.settings.heading }}</h2>
       </div>
-      {%- if collection != blank -%}
+      {%- if collection != blank and section.settings.show_button -%}
         <a href="{{ collection.url }}" class="btn btn--outline btn--sm">Shop All</a>
       {%- endif -%}
     </div>
@@ -55,6 +55,7 @@
     { "type": "text", "id": "eyebrow", "label": "Eyebrow text", "default": "Trending" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Best Sellers" },
     { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "checkbox", "id": "show_button", "label": "Show \"Shop All\" button", "info": "Links to the whole collection, which mixes men's and women's.", "default": true },
     { "type": "range", "id": "products_to_show", "label": "Products to show", "min": 4, "max": 12, "step": 4, "default": 8 },
     {
       "type": "select",

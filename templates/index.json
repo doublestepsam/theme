@@ -12,7 +12,10 @@
     "hero": {
       "type": "hero",
       "settings": {
-        "button_link": "/collections/all"
+        "button_label": "Shop Men's",
+        "button_link": "/collections/mens",
+        "button_label_2": "Shop Women's",
+        "button_link_2": "/collections/womens"
       }
     },
     "all-products": {
@@ -22,7 +25,8 @@
         "heading": "All Shoes",
         "collection": "all",
         "products_to_show": 12,
-        "background": "none"
+        "background": "none",
+        "show_button": false
       }
     }
   },
