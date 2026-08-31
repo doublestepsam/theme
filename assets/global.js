@@ -1,12 +1,11 @@
 /* Peak Line theme — global behaviors: cart drawer, quantity steppers,
-   mobile nav toggle, variant swatches, quick add. Vanilla JS, no deps. */
+   mobile nav toggle, variant swatches. Vanilla JS, no deps. */
 
 document.addEventListener('DOMContentLoaded', function () {
   initMobileNav();
   initCartDrawer();
   initQtySteppers();
   initVariantPicker();
-  initQuickAdd();
   initGalleryThumbs();
 });
 
@@ -328,39 +327,6 @@ function initVariantPicker() {
 
     // Initialize price/button state on load.
     refresh();
-  });
-}
-
-/* ---------------- Quick add from product cards ---------------- */
-function initQuickAdd() {
-  document.querySelectorAll('[data-quick-add]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var variantId = btn.dataset.variantId;
-      if (!variantId) return;
-      btn.disabled = true;
-      var original = btn.textContent;
-      fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: variantId, quantity: 1 })
-      })
-        .then(function (res) { return res.json(); })
-        .then(function () { return refreshCartDrawer(); })
-        .then(function () {
-          var drawer = document.querySelector('[data-cart-drawer]');
-          var overlay = document.querySelector('[data-cart-overlay]');
-          if (drawer && overlay && drawer.dataset.cartType === 'drawer') {
-            drawer.classList.add('is-open');
-            overlay.classList.add('is-open');
-          }
-          btn.textContent = 'Added';
-          setTimeout(function () { btn.textContent = original; btn.disabled = false; }, 1200);
-        })
-        .catch(function (err) {
-          console.error('Quick add failed', err);
-          btn.disabled = false;
-        });
-    });
   });
 }
 
