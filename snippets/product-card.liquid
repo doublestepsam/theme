@@ -1,0 +1,59 @@
+{%- comment -%}
+  Product card grid tile.
+  Accepts: product
+{%- endcomment -%}
+{%- liquid
+  assign featured_image = product.featured_media.preview_image
+  assign second_image = product.media[1].preview_image
+  assign variant = product.selected_or_first_available_variant
+-%}
+<div class="product-card">
+  <a href="{{ product.url }}" class="product-card__media">
+    <div class="product-card__badges">
+      {%- if product.compare_at_price > product.price -%}
+        <span class="badge badge--sale">Sale</span>
+      {%- endif -%}
+      {%- if product.tags contains 'new' -%}
+        <span class="badge badge--new">New</span>
+      {%- endif -%}
+      {%- unless product.available -%}
+        <span class="badge badge--soldout">Sold Out</span>
+      {%- endunless -%}
+    </div>
+    {%- if featured_image -%}
+      <img
+        src="{{ featured_image | image_url: width: 600 }}"
+        alt="{{ featured_image.alt | escape }}"
+        loading="lazy"
+        width="600"
+        height="{{ 600 | divided_by: featured_image.aspect_ratio }}"
+      >
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag }}
+    {%- endif -%}
+    {%- if second_image -%}
+      <img
+        class="product-card__image--secondary"
+        src="{{ second_image | image_url: width: 600 }}"
+        alt=""
+        loading="lazy"
+        width="600"
+        height="{{ 600 | divided_by: second_image.aspect_ratio }}"
+      >
+    {%- endif -%}
+    {%- if product.available and variant -%}
+      <div class="product-card__quick-add">
+        <button type="button" class="btn btn--navy btn--full btn--sm" data-quick-add data-variant-id="{{ variant.id }}">
+          Quick Add
+        </button>
+      </div>
+    {%- endif -%}
+  </a>
+  <a href="{{ product.url }}">
+    {%- if product.vendor != blank -%}
+      <div class="product-card__vendor">{{ product.vendor }}</div>
+    {%- endif -%}
+    <div class="product-card__title">{{ product.title }}</div>
+  </a>
+  {%- render 'price', product: product -%}
+</div>

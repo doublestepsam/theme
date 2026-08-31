@@ -1,1 +1,71 @@
-{%- render 'cart-drawer' -%}
+<div class="cart-drawer__overlay" data-cart-overlay></div>
+<div class="cart-drawer" data-cart-drawer data-cart-type="{{ settings.cart_type }}" aria-hidden="true">
+  <div data-cart-drawer-inner>
+    <div class="cart-drawer__header">
+      <h2>Your Cart ({{ cart.item_count }})</h2>
+      <button class="cart-drawer__close" data-cart-close aria-label="Close cart">
+        {% render 'icon-close' %}
+      </button>
+    </div>
+
+    <div class="cart-drawer__items">
+      {%- if cart.item_count == 0 -%}
+        <div class="empty-state">
+          <p>Your cart is empty</p>
+          <a href="{{ routes.all_products_collection_url }}" class="btn btn--navy">Start Shopping</a>
+        </div>
+      {%- else -%}
+        {%- for item in cart.items -%}
+          <div class="cart-line">
+            <a href="{{ item.url }}" class="cart-line__image">
+              {%- if item.image -%}
+                <img src="{{ item.image | image_url: width: 200 }}" alt="{{ item.image.alt | escape }}" loading="lazy">
+              {%- endif -%}
+            </a>
+            <div>
+              <a href="{{ item.url }}" class="cart-line__title">{{ item.product.title }}</a>
+              {%- unless item.variant.title contains 'Default' -%}
+                <div class="cart-line__variant">{{ item.variant.title }}</div>
+              {%- endunless -%}
+              {%- if item.properties.size > 0 -%}
+                {%- for property in item.properties -%}
+                  {%- if property.last != blank -%}
+                    <div class="cart-line__property"><strong>{{ property.first }}:</strong> {{ property.last }}</div>
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endif -%}
+              <div class="cart-line__qty" data-qty-stepper data-line-key="{{ item.key }}">
+                <button type="button" data-qty-minus aria-label="Decrease quantity">&minus;</button>
+                <input type="text" value="{{ item.quantity }}" aria-label="Quantity" inputmode="numeric">
+                <button type="button" data-qty-plus aria-label="Increase quantity">&plus;</button>
+              </div>
+              <div class="cart-line__remove" data-line-remove data-line-key="{{ item.key }}" role="button" tabindex="0">Remove</div>
+            </div>
+            <div>
+              {{ item.final_line_price | money }}
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- if cart.item_count > 0 -%}
+      <div class="cart-drawer__footer">
+        <div class="cart-subtotal-row">
+          <span>Subtotal</span>
+          <span>{{ cart.total_price | money }}</span>
+        </div>
+        <p class="cart-note">Shipping, taxes, and discounts calculated at checkout.</p>
+        <a href="{{ routes.cart_url }}" class="btn btn--outline btn--full" style="margin-bottom:10px;">View Cart</a>
+        <a href="{{ routes.cart_url }}/checkout" class="btn btn--primary btn--full">Checkout</a>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Cart drawer",
+  "settings": []
+}
+{% endschema %}

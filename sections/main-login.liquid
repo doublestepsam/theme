@@ -1,0 +1,27 @@
+<div class="page-width section-padding" style="max-width:420px;">
+  <h1 style="margin-bottom:24px;">Sign In</h1>
+  {%- form 'customer_login' -%}
+    {%- if form.errors -%}
+      <p style="color:var(--color-red); font-weight:700; margin-bottom:16px;">{{ form.errors | default_errors }}</p>
+    {%- endif -%}
+    <div style="margin-bottom:16px;">
+      <label class="variant-picker__label" for="CustomerEmail">Email</label>
+      <input type="email" id="CustomerEmail" name="customer[email]" required style="width:100%; padding:12px; border:2px solid var(--color-border);">
+    </div>
+    <div style="margin-bottom:16px;">
+      <label class="variant-picker__label" for="CustomerPassword">Password</label>
+      <input type="password" id="CustomerPassword" name="customer[password]" required style="width:100%; padding:12px; border:2px solid var(--color-border);">
+    </div>
+    <button type="submit" class="btn btn--primary btn--full">Sign In</button>
+    <p style="margin-top:16px; font-size:0.85rem;">
+      <a href="{{ routes.account_recover_url }}" style="text-decoration:underline;">Forgot your password?</a>
+    </p>
+    {%- if shop.customer_accounts_enabled -%}
+      <p style="font-size:0.85rem;">New here? <a href="{{ routes.account_register_url }}" style="text-decoration:underline; font-weight:700;">Create an account</a></p>
+    {%- endif -%}
+  {%- endform -%}
+</div>
+
+{% schema %}
+{ "name": "Login", "settings": [] }
+{% endschema %}
