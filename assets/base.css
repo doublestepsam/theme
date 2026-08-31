@@ -467,6 +467,7 @@ p { margin: 0 0 1em; }
 
 /* ---------- Newsletter ---------- */
 
+.newsletter-section { padding-bottom: 36px; }
 .newsletter {
   text-align: center;
 }
@@ -504,11 +505,13 @@ p { margin: 0 0 1em; }
   color: rgba(255,255,255,0.85);
 }
 .site-footer__top {
-  padding: 52px 0 32px;
+  padding: 40px 0 32px;
   display: grid;
   grid-template-columns: 1.4fr repeat(3, 1fr);
   gap: 32px;
 }
+/* No link columns configured, so drop the grid rather than reserve empty ones. */
+.site-footer__top--bare { display: block; }
 .site-footer__heading {
   color: #fff;
   font-size: 0.82rem;
@@ -542,7 +545,7 @@ p { margin: 0 0 1em; }
 .site-footer__social svg { width: 16px; height: 16px; }
 
 .site-footer__bottom {
-  background: var(--color-navy-dark);
+  border-top: 1px solid rgba(255,255,255,0.14);
   padding: 18px 0;
   display: flex;
   justify-content: space-between;

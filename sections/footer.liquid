@@ -1,5 +1,5 @@
 <footer class="site-footer">
-  <div class="page-width site-footer__top">
+  <div class="page-width site-footer__top{% if section.blocks.size == 0 %} site-footer__top--bare{% endif %}">
     <div>
       <div class="site-footer__logo">{{ shop.name }}</div>
       <p style="max-width:280px; font-size:0.88rem; opacity:0.8;">
