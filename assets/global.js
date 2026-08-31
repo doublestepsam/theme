@@ -371,7 +371,7 @@ function initVariantPicker() {
       }
 
       if (sidePos) {
-        // The left shoe carries the whole pair price; the right one is $0.
+        // Each side is its own priced variant, so a pair is two line items.
         form.dataset.pairItems = JSON.stringify([leftVariant.id, rightVariant.id]);
         form.dataset.pairProperties = JSON.stringify({
           'Left Shoe Size': leftVal,
@@ -379,7 +379,13 @@ function initVariantPicker() {
         });
         removeSplitPropertyInputs();
         if (idInput) idInput.value = leftVariant.id;
-        updatePriceDisplay(leftVariant);
+        // Each variant is one shoe; the shopper is buying two.
+        updatePriceDisplay({
+          price: leftVariant.price + rightVariant.price,
+          compare_at_price: (leftVariant.compare_at_price && rightVariant.compare_at_price)
+            ? leftVariant.compare_at_price + rightVariant.compare_at_price
+            : null
+        });
         updateFeaturedImage(leftVariant);
       } else {
         // No Side option: one pair-priced variant, sizes recorded as properties.

@@ -15,10 +15,12 @@
             {%- continue -%}
           {%- endif -%}
           {%- assign line_keys = item.key -%}
+          {%- assign line_price = item.final_line_price -%}
           {%- if pair_id != blank -%}
             {%- for other in cart.items -%}
               {%- if other.properties._pair_id == pair_id and other.key != item.key -%}
                 {%- assign line_keys = line_keys | append: ',' | append: other.key -%}
+                {%- assign line_price = line_price | plus: other.final_line_price -%}
               {%- endif -%}
             {%- endfor -%}
           {%- endif -%}
@@ -49,7 +51,7 @@
               </div>
               <div class="cart-line__remove" data-line-remove data-line-key="{{ line_keys }}" role="button" tabindex="0">Remove</div>
             </div>
-            <div style="font-weight:800;">{{ item.final_line_price | money }}</div>
+            <div style="font-weight:800;">{{ line_price | money }}</div>
           </div>
         {%- endfor -%}
       </div>

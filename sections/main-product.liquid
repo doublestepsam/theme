@@ -3,6 +3,9 @@
 
   assign has_size_option = false
   assign side_position = 0
+  # Each variant is one shoe, so a pair costs two of them. Until single-shoe
+  # ordering exists, the page quotes the pair.
+  assign price_multiplier = 1
   for option in product.options_with_values
     assign option_down = option.name | downcase
     if option_down contains 'size'
@@ -10,8 +13,11 @@
     endif
     if option_down == 'side'
       assign side_position = option.position
+      assign price_multiplier = 2
     endif
   endfor
+  assign display_price = current_variant.price | times: price_multiplier
+  assign display_compare_price = current_variant.compare_at_price | times: price_multiplier
 -%}
 <div class="section-padding page-width">
   <div class="product-main">
@@ -50,11 +56,11 @@
 
       <div class="product-info__price" data-price-wrapper>
         {%- if current_variant.compare_at_price > current_variant.price -%}
-          <span class="price__sale" data-price>{{ current_variant.price | money }}</span>
-          <span class="price__compare" data-compare-price>{{ current_variant.compare_at_price | money }}</span>
+          <span class="price__sale" data-price>{{ display_price | money }}</span>
+          <span class="price__compare" data-compare-price>{{ display_compare_price | money }}</span>
           <span class="badge badge--sale" data-sale-badge>Sale</span>
         {%- else -%}
-          <span data-price>{{ current_variant.price | money }}</span>
+          <span data-price>{{ display_price | money }}</span>
           <span class="price__compare" data-compare-price hidden></span>
           <span class="badge badge--sale" data-sale-badge hidden>Sale</span>
         {%- endif -%}
