@@ -2,22 +2,12 @@
   "name": "Header",
   "type": "header",
   "sections": {
-    "announcement-bar": {
-      "type": "announcement-bar",
-      "blocks": {
-        "msg-1": {
-          "type": "message",
-          "settings": {
-            "text": "Free Shipping on Orders Over $49 | Curbside Pickup Available"
-          }
-        }
-      },
-      "block_order": ["msg-1"]
-    },
     "header": {
       "type": "header",
       "settings": {}
     }
   },
-  "order": ["announcement-bar", "header"]
+  "order": [
+    "header"
+  ]
 }
