@@ -696,33 +696,16 @@ p { margin: 0 0 1em; }
 button.variant-swatch { appearance: none; -webkit-appearance: none; font: inherit; }
 
 .split-size-note {
-  margin: 0 0 14px;
+  margin: 0 0 18px;
   font-size: 0.82rem;
   font-weight: 500;
   text-transform: none;
   color: var(--color-text-light);
 }
 
-.split-size-fields {
-  padding: 16px;
-  margin-bottom: 20px;
-  border: 2px solid var(--color-navy);
-}
 .split-size-fields[hidden] { display: none; }
-.split-size-fields__row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-.split-size-fields select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--color-border);
-  font-size: 0.9rem;
-  background: #fff;
-}
 .split-size-availability {
-  margin: 12px 0 0;
+  margin: -6px 0 22px;
   font-size: 0.82rem;
   font-weight: 700;
   min-height: 1.2em;

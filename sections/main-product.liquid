@@ -70,24 +70,20 @@
               {%- if settings.split_sizing_note != blank -%}
                 <p class="split-size-note">{{ settings.split_sizing_note }}</p>
               {%- endif -%}
-              <div class="split-size-fields__row">
-                <div>
-                  <label class="variant-picker__label" for="SplitLeftSize-{{ product.id }}">Left shoe size</label>
-                  <select id="SplitLeftSize-{{ product.id }}" data-split-left>
-                    <option value="">Select size</option>
-                    {%- for value in option.values -%}
-                      <option value="{{ value | escape }}">{{ value }}</option>
-                    {%- endfor -%}
-                  </select>
+              <div class="variant-picker" data-split-left>
+                <span class="variant-picker__label">Left shoe size</span>
+                <div class="variant-swatches">
+                  {%- for value in option.values -%}
+                    <button type="button" class="variant-swatch" data-variant-value data-value="{{ value | escape }}">{{ value }}</button>
+                  {%- endfor -%}
                 </div>
-                <div>
-                  <label class="variant-picker__label" for="SplitRightSize-{{ product.id }}">Right shoe size</label>
-                  <select id="SplitRightSize-{{ product.id }}" data-split-right>
-                    <option value="">Select size</option>
-                    {%- for value in option.values -%}
-                      <option value="{{ value | escape }}">{{ value }}</option>
-                    {%- endfor -%}
-                  </select>
+              </div>
+              <div class="variant-picker" data-split-right>
+                <span class="variant-picker__label">Right shoe size</span>
+                <div class="variant-swatches">
+                  {%- for value in option.values -%}
+                    <button type="button" class="variant-swatch" data-variant-value data-value="{{ value | escape }}">{{ value }}</button>
+                  {%- endfor -%}
                 </div>
               </div>
               <p class="split-size-availability" data-split-availability></p>

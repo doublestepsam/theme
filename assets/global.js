@@ -264,6 +264,11 @@ function initVariantPicker() {
     // Both sides must be in stock. The line item is billed against the larger
     // of the two sizes' variants; the two sizes ride along as line-item
     // properties for fulfillment.
+    function selectedSwatchValue(container) {
+      var selectedSwatch = container.querySelector('.variant-swatch.is-selected');
+      return selectedSwatch ? selectedSwatch.dataset.value : '';
+    }
+
     function resetSplitState(message, isError) {
       setAddButtonState(false, 'Select both sizes');
       removeSplitPropertyInputs();
@@ -274,8 +279,8 @@ function initVariantPicker() {
     }
 
     function evaluateSplitSelection() {
-      var leftVal = splitLeft.value;
-      var rightVal = splitRight.value;
+      var leftVal = selectedSwatchValue(splitLeft);
+      var rightVal = selectedSwatchValue(splitRight);
 
       if (!leftVal || !rightVal) {
         resetSplitState('');
@@ -321,8 +326,17 @@ function initVariantPicker() {
     }
 
     if (isSplit) {
-      splitLeft.addEventListener('change', evaluateSplitSelection);
-      splitRight.addEventListener('change', evaluateSplitSelection);
+      [splitLeft, splitRight].forEach(function (container) {
+        container.querySelectorAll('[data-variant-value]').forEach(function (swatch) {
+          swatch.addEventListener('click', function () {
+            container.querySelectorAll('.variant-swatch').forEach(function (other) {
+              other.classList.remove('is-selected');
+            });
+            swatch.classList.add('is-selected');
+            evaluateSplitSelection();
+          });
+        });
+      });
     }
 
     // Initialize price/button state on load.
