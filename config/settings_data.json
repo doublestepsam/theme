@@ -24,10 +24,10 @@
       "page_width": 1400,
       "grid_gap": 20,
       "button_radius": 2,
-      "social_instagram": "",
+      "social_instagram": "https://www.instagram.com/doublestepfootwear/",
       "social_facebook": "",
-      "social_tiktok": "",
-      "social_youtube": "",
+      "social_tiktok": "https://www.tiktok.com/@doublestep.footwear",
+      "social_youtube": "https://www.youtube.com/@doublestepfootwear",
       "cart_type": "drawer"
     }
   }
