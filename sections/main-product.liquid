@@ -4,7 +4,7 @@
   assign has_size_option = false
   for option in product.options_with_values
     assign option_down = option.name | downcase
-    if option_down == 'size'
+    if option_down contains 'size'
       assign has_size_option = true
     endif
   endfor
@@ -65,7 +65,7 @@
 
         {%- for option in product.options_with_values -%}
           {%- assign option_down = option.name | downcase -%}
-          {%- if option_down == 'size' -%}
+          {%- if option_down contains 'size' -%}
             <div class="split-size-fields" data-split-fields data-option-position="{{ option.position }}">
               {%- if settings.split_sizing_note != blank -%}
                 <p class="split-size-note">{{ settings.split_sizing_note }}</p>
