@@ -184,6 +184,17 @@ function initVariantPicker() {
       });
     }
 
+    var galleryMain = (form.closest('.product-main') || document).querySelector('[data-gallery-main] img');
+
+    // Variants only carry a featured_image once one is assigned to them in
+    // the admin; without one the gallery just keeps whatever it is showing.
+    function updateFeaturedImage(variant) {
+      if (!galleryMain || !variant || !variant.featured_image) return;
+      var src = variant.featured_image.src;
+      galleryMain.src = src + (src.indexOf('?') === -1 ? '?' : '&') + 'width=1000';
+      galleryMain.alt = variant.featured_image.alt || '';
+    }
+
     function formatMoney(cents) {
       return '$' + (cents / 100).toFixed(2);
     }
@@ -243,6 +254,7 @@ function initVariantPicker() {
       }
       if (idInput) idInput.value = variant.id;
       updatePriceDisplay(variant);
+      updateFeaturedImage(variant);
       setAddButtonState(variant.available, variant.available ? 'Add to Cart' : 'Sold Out');
     }
 
@@ -283,6 +295,8 @@ function initVariantPicker() {
       var rightVal = selectedSwatchValue(splitRight);
 
       if (!leftVal || !rightVal) {
+        // Colour is usually picked before sizes, so still swap the photo.
+        updateFeaturedImage(findVariant(selected));
         resetSplitState('');
         return;
       }
@@ -311,6 +325,7 @@ function initVariantPicker() {
 
       if (idInput) idInput.value = billingVariant.id;
       updatePriceDisplay(billingVariant);
+      updateFeaturedImage(billingVariant);
       setSplitPropertyInputs(leftVal, rightVal);
       setAddButtonState(true, 'Add to Cart');
 
