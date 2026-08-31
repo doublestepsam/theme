@@ -4,8 +4,14 @@
 {%- endcomment -%}
 {%- liquid
   assign target = variant | default: product
-  assign compare_at = target.compare_at_price
-  assign price = target.price
+  # A variant is one shoe when the product carries a Side option, so a card
+  # has to quote two of them or it undercuts the real pair price.
+  assign multiplier = 1
+  if product.options contains 'Side'
+    assign multiplier = 2
+  endif
+  assign compare_at = target.compare_at_price | times: multiplier
+  assign price = target.price | times: multiplier
 -%}
 <div class="product-card__price">
   {%- if compare_at > price -%}

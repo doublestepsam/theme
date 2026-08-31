@@ -18,8 +18,23 @@
 
     <div class="grid grid--4">
       {%- if collection != blank -%}
-        {%- for product in collection.products limit: products_to_show -%}
-          {%- render 'product-card', product: product -%}
+        {%- comment -%}
+          Men's and women's are separate products sharing a model, so show one
+          card per model. Relies on the -mens/-womens handle suffix.
+        {%- endcomment -%}
+        {%- assign shown = 0 -%}
+        {%- assign seen_models = '' -%}
+        {%- for product in collection.products -%}
+          {%- if shown >= products_to_show -%}
+            {%- break -%}
+          {%- endif -%}
+          {%- assign model = product.handle | remove: '-mens' | remove: '-womens' -%}
+          {%- assign marker = '|' | append: model | append: '|' -%}
+          {%- unless seen_models contains marker -%}
+            {%- assign seen_models = seen_models | append: marker -%}
+            {%- assign shown = shown | plus: 1 -%}
+            {%- render 'product-card', product: product -%}
+          {%- endunless -%}
         {%- endfor -%}
       {%- else -%}
         {%- for i in (1..products_to_show) -%}
