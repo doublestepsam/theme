@@ -17,6 +17,8 @@
   {{ content_for_header }}
 
   {%- style -%}
+    {{ settings.font_heading | font_face: font_display: 'swap' }}
+    {{ settings.font_body | font_face: font_display: 'swap' }}
     :root {
       --color-navy: {{ settings.color_navy }};
       --color-navy-dark: {{ settings.color_navy_dark }};
@@ -33,9 +35,6 @@
       --font-body-family: {{ settings.font_body.family }}, {{ settings.font_body.fallback_families }};
     }
   {%- endstyle -%}
-
-  {{ settings.font_heading | font_face: font_display: 'swap' }}
-  {{ settings.font_body | font_face: font_display: 'swap' }}
 
   <link rel="stylesheet" href="{{ 'base.css' | asset_url }}">
   <script src="{{ 'global.js' | asset_url }}" defer="defer"></script>
