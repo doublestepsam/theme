@@ -2,10 +2,14 @@
   assign current_variant = product.selected_or_first_available_variant
 
   assign has_size_option = false
+  assign side_position = 0
   for option in product.options_with_values
     assign option_down = option.name | downcase
     if option_down contains 'size'
       assign has_size_option = true
+    endif
+    if option_down == 'side'
+      assign side_position = option.position
     endif
   endfor
 -%}
@@ -65,8 +69,11 @@
 
         {%- for option in product.options_with_values -%}
           {%- assign option_down = option.name | downcase -%}
+          {%- if option_down == 'side' -%}
+            {%- continue -%}
+          {%- endif -%}
           {%- if option_down contains 'size' -%}
-            <div class="split-size-fields" data-split-fields data-option-position="{{ option.position }}">
+            <div class="split-size-fields" data-split-fields data-option-position="{{ option.position }}" data-side-position="{{ side_position }}">
               {%- if settings.split_sizing_note != blank -%}
                 <p class="split-size-note">{{ settings.split_sizing_note }}</p>
               {%- endif -%}

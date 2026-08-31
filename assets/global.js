@@ -55,13 +55,44 @@ function initCartDrawer() {
   // Intercept "add to cart" forms to add via AJAX and open the drawer.
   document.querySelectorAll('form[data-product-form]').forEach(function (form) {
     form.addEventListener('submit', function (e) {
-      if (drawer.dataset.cartType !== 'drawer') return; // normal submit -> cart page
+      var pairItems = form.dataset.pairItems;
+      var isDrawer = drawer.dataset.cartType === 'drawer';
+      // A split pair is two line items, which a plain form post cannot do, so
+      // those always go through fetch even when the cart is a page.
+      if (!pairItems && !isDrawer) return; // normal submit -> cart page
       e.preventDefault();
-      var formData = new FormData(form);
-      fetch('/cart/add.js', { method: 'POST', body: formData, headers: { Accept: 'application/json' } })
-        .then(function (res) { return res.json(); })
+
+      var request;
+      if (pairItems) {
+        var qtyInput = form.querySelector('[name="quantity"]');
+        var quantity = parseInt(qtyInput && qtyInput.value, 10) || 1;
+        var properties = JSON.parse(form.dataset.pairProperties || '{}');
+        // Ties the two shoes together for picking and packing. The leading
+        // underscore keeps it off the customer's order summary.
+        properties._pair_id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        request = fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: JSON.parse(pairItems).map(function (id) {
+              return { id: id, quantity: quantity, properties: properties };
+            })
+          })
+        });
+      } else {
+        request = fetch('/cart/add.js', { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+      }
+
+      request
+        .then(function (res) {
+          if (!res.ok) throw new Error('Add to cart failed');
+          return res.json();
+        })
         .then(function () { return refreshCartDrawer(); })
-        .then(open)
+        .then(function () {
+          if (isDrawer) open();
+          else window.location.href = '/cart';
+        })
         .catch(function (err) { console.error('Add to cart failed', err); });
     });
   });
@@ -166,6 +197,9 @@ function initVariantPicker() {
     // chosen as two independent selects rather than a single swatch picker.
     var isSplit = !!(splitFields && splitLeft && splitRight);
     var sizePos = isSplit ? parseInt(splitFields.dataset.optionPosition, 10) : null;
+    // With a Side option each variant is one physical shoe, so the two sides
+    // are added as two line items instead of one pair-priced variant.
+    var sidePos = isSplit ? parseInt(splitFields.dataset.sidePosition, 10) || 0 : 0;
 
     // Current selection state, ordered by option position (1-indexed in Shopify variants).
     var selected = [];
@@ -284,6 +318,8 @@ function initVariantPicker() {
     function resetSplitState(message, isError) {
       setAddButtonState(false, 'Select both sizes');
       removeSplitPropertyInputs();
+      delete form.dataset.pairItems;
+      delete form.dataset.pairProperties;
       if (splitAvailability) {
         splitAvailability.textContent = message || '';
         splitAvailability.className = 'split-size-availability' + (isError ? ' is-error' : '');
@@ -305,6 +341,10 @@ function initVariantPicker() {
       leftOptions[sizePos - 1] = leftVal;
       var rightOptions = selected.slice();
       rightOptions[sizePos - 1] = rightVal;
+      if (sidePos) {
+        leftOptions[sidePos - 1] = 'Left';
+        rightOptions[sidePos - 1] = 'Right';
+      }
 
       var leftVariant = findVariant(leftOptions);
       var rightVariant = findVariant(rightOptions);
@@ -318,15 +358,28 @@ function initVariantPicker() {
         return;
       }
 
-      var leftNum = parseFloat(leftVal);
-      var rightNum = parseFloat(rightVal);
-      var billingVariant = leftVariant;
-      if (!isNaN(leftNum) && !isNaN(rightNum) && rightNum > leftNum) billingVariant = rightVariant;
-
-      if (idInput) idInput.value = billingVariant.id;
-      updatePriceDisplay(billingVariant);
-      updateFeaturedImage(billingVariant);
-      setSplitPropertyInputs(leftVal, rightVal);
+      if (sidePos) {
+        // The left shoe carries the whole pair price; the right one is $0.
+        form.dataset.pairItems = JSON.stringify([leftVariant.id, rightVariant.id]);
+        form.dataset.pairProperties = JSON.stringify({
+          'Left Shoe Size': leftVal,
+          'Right Shoe Size': rightVal
+        });
+        removeSplitPropertyInputs();
+        if (idInput) idInput.value = leftVariant.id;
+        updatePriceDisplay(leftVariant);
+        updateFeaturedImage(leftVariant);
+      } else {
+        // No Side option: one pair-priced variant, sizes recorded as properties.
+        var leftNum = parseFloat(leftVal);
+        var rightNum = parseFloat(rightVal);
+        var billingVariant = leftVariant;
+        if (!isNaN(leftNum) && !isNaN(rightNum) && rightNum > leftNum) billingVariant = rightVariant;
+        if (idInput) idInput.value = billingVariant.id;
+        updatePriceDisplay(billingVariant);
+        updateFeaturedImage(billingVariant);
+        setSplitPropertyInputs(leftVal, rightVal);
+      }
       setAddButtonState(true, 'Add to Cart');
 
       if (splitAvailability) {
