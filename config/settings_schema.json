@@ -55,14 +55,8 @@
     "name": "Split sizing",
     "settings": [
       { "type": "header", "content": "Split-size shoe orders" },
-      { "type": "paragraph", "content": "Lets shoppers order two different sizes for the same pair (one per foot), at a price premium. Applies to products tagged 'shoes' or with a Product Type containing 'Shoe' that have a Size option AND the order-type option set up below (see theme docs comment in main-product.liquid for setup steps)." },
-      { "type": "checkbox", "id": "enable_split_sizing", "label": "Enable split-size ordering", "default": true },
-      { "type": "text", "id": "split_sizing_label", "label": "Toggle label", "default": "Need two different sizes?" },
-      { "type": "textarea", "id": "split_sizing_note", "label": "Helper text", "default": "One shoe from each size — a premium applies since it uses two separate pairs." },
-      { "type": "range", "id": "split_sizing_premium_percent", "label": "Premium percentage (for customer-facing copy only — the real charge always comes from your variant price)", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 20 },
-      { "type": "text", "id": "split_sizing_option_name", "label": "Variant option name that holds the premium", "info": "Must exactly match an option name on your products, e.g. 'Order Type'.", "default": "Order Type" },
-      { "type": "text", "id": "split_sizing_premium_value", "label": "Exact option value for the premium variant", "info": "Must exactly match a value of the option above, e.g. 'Split Pair (+20%)'.", "default": "Split Pair (+20%)" },
-      { "type": "text", "id": "split_sizing_fee_note", "label": "Additional note (optional)" }
+      { "type": "paragraph", "content": "Every order is a split pair: shoppers pick a left and a right size on any product with a Size option. Both sides must be in stock; the line item bills against the larger size and records both sizes as line-item properties." },
+      { "type": "textarea", "id": "split_sizing_note", "label": "Helper text", "default": "One shoe from each size — every Doublestep pair ships as a true split pair." }
     ]
   },
   {

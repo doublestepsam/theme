@@ -1,47 +1,13 @@
-{%- comment -%}
-  SPLIT-SIZE PREMIUM SETUP (one-time, per shoe product):
-  Shopify checkout only ever charges a real variant price — theme code can't
-  invent a surcharge at checkout. To charge the split-size premium correctly,
-  each shoe product needs a second option (default name "Order Type", see
-  Theme Settings > Split sizing) with two values, e.g.:
-    - "Standard"
-    - "Split Pair (+20%)"
-  ...and a full set of variants for the premium value, priced at 1.2x the
-  standard price for the same size. Recommended: turn OFF inventory tracking
-  on the premium-value variants (same physical shoe, just a price wrapper)
-  and keep real inventory tracked only on the "Standard" variants.
-  This section will only show the split-size UI on a product once that
-  option exists on it — otherwise it stays hidden rather than risk charging
-  the wrong price.
-{%- endcomment -%}
 {%- liquid
-  assign product = product
   assign current_variant = product.selected_or_first_available_variant
 
-  assign is_footwear = false
-  if product.type contains 'Shoe' or product.type contains 'shoe' or product.type contains 'Footwear' or product.type contains 'footwear'
-    assign is_footwear = true
-  endif
-  for tag in product.tags
-    assign tag_down = tag | downcase
-    if tag_down contains 'shoe'
-      assign is_footwear = true
+  assign has_size_option = false
+  for option in product.options_with_values
+    assign option_down = option.name | downcase
+    if option_down == 'size'
+      assign has_size_option = true
     endif
   endfor
-
-  assign premium_option_name_down = settings.split_sizing_option_name | downcase
-  assign has_premium_option = false
-  for opt_name in product.options
-    assign opt_name_down = opt_name | downcase
-    if opt_name_down == premium_option_name_down
-      assign has_premium_option = true
-    endif
-  endfor
-
-  assign show_split_sizing = false
-  if is_footwear and settings.enable_split_sizing and has_premium_option
-    assign show_split_sizing = true
-  endif
 -%}
 <div class="section-padding page-width">
   <div class="product-main">
@@ -88,55 +54,22 @@
           <span class="price__compare" data-compare-price hidden></span>
           <span class="badge badge--sale" data-sale-badge hidden>Sale</span>
         {%- endif -%}
-        <span class="badge badge--new" data-premium-badge hidden>+{{ settings.split_sizing_premium_percent }}% split-size premium</span>
       </div>
 
       <script type="application/json" data-product-variants>
         {{ product.variants | json }}
       </script>
 
-      {%- form 'product', product, data-product-form: true, data-premium-option-name: settings.split_sizing_option_name, data-premium-option-value: settings.split_sizing_premium_value -%}
+      {%- form 'product', product, data-product-form: true -%}
         <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id-input>
 
         {%- for option in product.options_with_values -%}
           {%- assign option_down = option.name | downcase -%}
-          {%- assign is_size_option = false -%}
           {%- if option_down == 'size' -%}
-            {%- assign is_size_option = true -%}
-          {%- endif -%}
-          {%- assign is_premium_option = false -%}
-          {%- if option_down == premium_option_name_down -%}
-            {%- assign is_premium_option = true -%}
-          {%- endif -%}
-
-          <div class="variant-picker{% if is_premium_option %} visually-hidden{% endif %}" data-variant-picker data-option-position="{{ option.position }}" data-option-name="{{ option.name | escape }}" {% if is_size_option and show_split_sizing %}data-size-picker{% endif %}>
-            <span class="variant-picker__label">{{ option.name }}</span>
-            <div class="variant-swatches">
-              {%- for value in option.values -%}
-                <button
-                  type="button"
-                  class="variant-swatch{% if value == option.selected_value %} is-selected{% endif %}"
-                  data-variant-value
-                  data-value="{{ value | escape }}"
-                  {% if is_premium_option %}tabindex="-1" aria-hidden="true"{% endif %}
-                >{{ value }}</button>
-              {%- endfor -%}
-            </div>
-          </div>
-
-          {%- if is_size_option and show_split_sizing -%}
-            <div class="split-size-toggle">
-              <label class="split-size-toggle__label">
-                <input type="checkbox" data-split-toggle>
-                {{ settings.split_sizing_label | default: "Need two different sizes?" }}
-              </label>
-              <p class="split-size-note">
-                {{ settings.split_sizing_note }}
-                A {{ settings.split_sizing_premium_percent }}% premium applies to split-size orders.
-              </p>
-            </div>
-
-            <div class="split-size-fields" data-split-fields hidden>
+            <div class="split-size-fields" data-split-fields data-option-position="{{ option.position }}">
+              {%- if settings.split_sizing_note != blank -%}
+                <p class="split-size-note">{{ settings.split_sizing_note }}</p>
+              {%- endif -%}
               <div class="split-size-fields__row">
                 <div>
                   <label class="variant-picker__label" for="SplitLeftSize-{{ product.id }}">Left shoe size</label>
@@ -157,11 +90,21 @@
                   </select>
                 </div>
               </div>
-              <p class="split-size-price-breakdown" data-split-price-breakdown hidden></p>
-              {%- if settings.split_sizing_fee_note != blank -%}
-                <p class="split-size-fee-note">{{ settings.split_sizing_fee_note }}</p>
-              {%- endif -%}
               <p class="split-size-availability" data-split-availability></p>
+            </div>
+          {%- else -%}
+            <div class="variant-picker" data-variant-picker data-option-position="{{ option.position }}" data-option-name="{{ option.name | escape }}">
+              <span class="variant-picker__label">{{ option.name }}</span>
+              <div class="variant-swatches">
+                {%- for value in option.values -%}
+                  <button
+                    type="button"
+                    class="variant-swatch{% if value == option.selected_value %} is-selected{% endif %}"
+                    data-variant-value
+                    data-value="{{ value | escape }}"
+                  >{{ value }}</button>
+                {%- endfor -%}
+              </div>
             </div>
           {%- endif -%}
         {%- endfor -%}
@@ -172,8 +115,8 @@
             <input type="text" name="quantity" value="1" aria-label="Quantity" inputmode="numeric">
             <button type="button" data-qty-plus aria-label="Increase quantity">&plus;</button>
           </div>
-          <button type="submit" class="btn btn--primary" data-add-to-cart-btn {% unless current_variant.available %}disabled{% endunless %}>
-            <span data-add-to-cart-text>{%- if current_variant.available -%}Add to Cart{%- else -%}Sold Out{%- endif -%}</span>
+          <button type="submit" class="btn btn--primary" data-add-to-cart-btn {% if has_size_option or current_variant.available == false %}disabled{% endif %}>
+            <span data-add-to-cart-text>{%- if has_size_option -%}Select both sizes{%- elsif current_variant.available -%}Add to Cart{%- else -%}Sold Out{%- endif -%}</span>
           </button>
         </div>
       {%- endform -%}

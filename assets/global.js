@@ -151,7 +151,6 @@ function initVariantPicker() {
     }
 
     var pickers = Array.prototype.slice.call(form.querySelectorAll('[data-variant-picker]'));
-    var sizePicker = form.querySelector('[data-size-picker]');
     var idInput = form.querySelector('[data-variant-id-input]');
     var addBtn = form.querySelector('[data-add-to-cart-btn]');
     var addBtnText = form.querySelector('[data-add-to-cart-text]');
@@ -160,21 +159,14 @@ function initVariantPicker() {
     var comparePriceEl = priceWrapper ? priceWrapper.querySelector('[data-compare-price]') : null;
     var saleBadgeEl = priceWrapper ? priceWrapper.querySelector('[data-sale-badge]') : null;
 
-    var splitToggle = form.querySelector('[data-split-toggle]');
     var splitFields = form.querySelector('[data-split-fields]');
     var splitLeft = form.querySelector('[data-split-left]');
     var splitRight = form.querySelector('[data-split-right]');
     var splitAvailability = form.querySelector('[data-split-availability]');
-    var splitBreakdown = form.querySelector('[data-split-price-breakdown]');
-    var premiumBadge = priceWrapper ? priceWrapper.querySelector('[data-premium-badge]') : null;
-
-    var premiumOptionName = form.dataset.premiumOptionName;
-    var premiumOptionValue = form.dataset.premiumOptionValue;
-    var premiumPicker = pickers.find(function (p) {
-      return premiumOptionName && p.dataset.optionName &&
-        p.dataset.optionName.toLowerCase() === premiumOptionName.toLowerCase();
-    });
-    var premiumPos = premiumPicker ? parseInt(premiumPicker.dataset.optionPosition, 10) : null;
+    // Every Doublestep order is a split pair, so the size option is always
+    // chosen as two independent selects rather than a single swatch picker.
+    var isSplit = !!(splitFields && splitLeft && splitRight);
+    var sizePos = isSplit ? parseInt(splitFields.dataset.optionPosition, 10) : null;
 
     // Current selection state, ordered by option position (1-indexed in Shopify variants).
     var selected = [];
@@ -213,7 +205,6 @@ function initVariantPicker() {
         if (comparePriceEl) comparePriceEl.hidden = true;
         if (saleBadgeEl) saleBadgeEl.hidden = true;
       }
-      if (premiumBadge) premiumBadge.hidden = true;
     }
 
     function setAddButtonState(available, label) {
@@ -261,131 +252,82 @@ function initVariantPicker() {
       // handled separately so the two modes never fight over selection state.
       picker.querySelectorAll('[data-variant-value]').forEach(function (swatch) {
         swatch.addEventListener('click', function () {
-          if (splitToggle && splitToggle.checked && picker === sizePicker) return;
           var pos = parseInt(picker.dataset.optionPosition, 10);
           picker.querySelectorAll('.variant-swatch').forEach(function (s) { s.classList.remove('is-selected'); });
           swatch.classList.add('is-selected');
           selected[pos - 1] = swatch.dataset.value;
-          updateMainVariant();
+          refresh();
         });
       });
     });
 
     // ---- Split-size (per-foot) selection ----
-    // Stock truth lives on the "standard" variants; the real charge always
-    // comes from the premium-value variant's own price (never computed
-    // client-side), so the customer is only ever charged what checkout will
-    // actually collect.
-    if (splitToggle && sizePicker && splitFields) {
-      splitToggle.addEventListener('change', function () {
-        if (splitToggle.checked) {
-          sizePicker.hidden = true;
-          splitFields.hidden = false;
-          removeSplitPropertyInputs();
-          setAddButtonState(false, 'Select both sizes');
-        } else {
-          sizePicker.hidden = false;
-          splitFields.hidden = true;
-          removeSplitPropertyInputs();
-          if (splitAvailability) {
-            splitAvailability.textContent = '';
-            splitAvailability.className = 'split-size-availability';
-          }
-          if (splitBreakdown) splitBreakdown.hidden = true;
-          updateMainVariant();
-        }
-      });
+    // Both sides must be in stock. The line item is billed against the larger
+    // of the two sizes' variants; the two sizes ride along as line-item
+    // properties for fulfillment.
+    function resetSplitState(message, isError) {
+      setAddButtonState(false, 'Select both sizes');
+      removeSplitPropertyInputs();
+      if (splitAvailability) {
+        splitAvailability.textContent = message || '';
+        splitAvailability.className = 'split-size-availability' + (isError ? ' is-error' : '');
+      }
+    }
 
-      function resetSplitState(message, isError) {
-        setAddButtonState(false, 'Select both sizes');
-        removeSplitPropertyInputs();
-        if (splitBreakdown) splitBreakdown.hidden = true;
-        if (splitAvailability) {
-          splitAvailability.textContent = message || '';
-          splitAvailability.className = 'split-size-availability' + (isError ? ' is-error' : '');
-        }
+    function evaluateSplitSelection() {
+      var leftVal = splitLeft.value;
+      var rightVal = splitRight.value;
+
+      if (!leftVal || !rightVal) {
+        resetSplitState('');
+        return;
       }
 
-      function evaluateSplitSelection() {
-        var leftVal = splitLeft.value;
-        var rightVal = splitRight.value;
+      var leftOptions = selected.slice();
+      leftOptions[sizePos - 1] = leftVal;
+      var rightOptions = selected.slice();
+      rightOptions[sizePos - 1] = rightVal;
 
-        if (!leftVal || !rightVal) {
-          resetSplitState('');
-          return;
-        }
+      var leftVariant = findVariant(leftOptions);
+      var rightVariant = findVariant(rightOptions);
 
-        if (!premiumPicker || premiumPos == null) {
-          resetSplitState('Split-size pricing isn\'t set up for this product yet — please contact us to order this combination.', true);
-          return;
-        }
+      var problems = [];
+      if (!leftVariant || !leftVariant.available) problems.push('Left size ' + leftVal + ' is unavailable');
+      if (!rightVariant || !rightVariant.available) problems.push('Right size ' + rightVal + ' is unavailable');
 
-        var sizePos = parseInt(sizePicker.dataset.optionPosition, 10);
-
-        // Real stock truth: the standard (non-premium) variant of each side.
-        var leftStandardOptions = selected.slice();
-        leftStandardOptions[sizePos - 1] = leftVal;
-        var rightStandardOptions = selected.slice();
-        rightStandardOptions[sizePos - 1] = rightVal;
-
-        var leftStandardVariant = findVariant(leftStandardOptions);
-        var rightStandardVariant = findVariant(rightStandardOptions);
-
-        var problems = [];
-        if (!leftStandardVariant || !leftStandardVariant.available) problems.push('Left size ' + leftVal + ' is unavailable');
-        if (!rightStandardVariant || !rightStandardVariant.available) problems.push('Right size ' + rightVal + ' is unavailable');
-
-        if (problems.length) {
-          resetSplitState(problems.join(' · '), true);
-          return;
-        }
-
-        // Bill against the larger of the two sizes — common convention for
-        // split-pair orders — using the real premium-priced variant.
-        var leftNum = parseFloat(leftVal);
-        var rightNum = parseFloat(rightVal);
-        var billSide = 'left';
-        if (!isNaN(leftNum) && !isNaN(rightNum) && rightNum > leftNum) billSide = 'right';
-        var billingSizeValue = billSide === 'right' ? rightVal : leftVal;
-        var standardBillingVariant = billSide === 'right' ? rightStandardVariant : leftStandardVariant;
-
-        var premiumOptions = selected.slice();
-        premiumOptions[sizePos - 1] = billingSizeValue;
-        premiumOptions[premiumPos - 1] = premiumOptionValue;
-        var premiumVariant = findVariant(premiumOptions);
-
-        if (!premiumVariant) {
-          resetSplitState('Split-size pricing isn\'t set up for size ' + billingSizeValue + ' yet — please contact us to order this combination.', true);
-          return;
-        }
-        if (!premiumVariant.available) {
-          resetSplitState('Split-size ordering isn\'t available for size ' + billingSizeValue + ' right now.', true);
-          return;
-        }
-
-        if (idInput) idInput.value = premiumVariant.id;
-        updatePriceDisplay(premiumVariant);
-        if (premiumBadge) premiumBadge.hidden = false;
-        setSplitPropertyInputs(leftVal, rightVal);
-        setAddButtonState(true, 'Add Split Pair to Cart');
-
-        if (splitBreakdown) {
-          splitBreakdown.hidden = false;
-          splitBreakdown.textContent = 'Standard size ' + billingSizeValue + ': ' + formatMoney(standardBillingVariant.price) +
-            ' → Split-size price: ' + formatMoney(premiumVariant.price);
-        }
-        if (splitAvailability) {
-          splitAvailability.textContent = 'Both sizes in stock — ready to add.';
-          splitAvailability.className = 'split-size-availability is-ok';
-        }
+      if (problems.length) {
+        resetSplitState(problems.join(' \u00b7 '), true);
+        return;
       }
 
+      var leftNum = parseFloat(leftVal);
+      var rightNum = parseFloat(rightVal);
+      var billingVariant = leftVariant;
+      if (!isNaN(leftNum) && !isNaN(rightNum) && rightNum > leftNum) billingVariant = rightVariant;
+
+      if (idInput) idInput.value = billingVariant.id;
+      updatePriceDisplay(billingVariant);
+      setSplitPropertyInputs(leftVal, rightVal);
+      setAddButtonState(true, 'Add to Cart');
+
+      if (splitAvailability) {
+        splitAvailability.textContent = 'Both sizes in stock \u2014 ready to add.';
+        splitAvailability.className = 'split-size-availability is-ok';
+      }
+    }
+
+    function refresh() {
+      if (isSplit) evaluateSplitSelection();
+      else updateMainVariant();
+    }
+
+    if (isSplit) {
       splitLeft.addEventListener('change', evaluateSplitSelection);
       splitRight.addEventListener('change', evaluateSplitSelection);
     }
 
     // Initialize price/button state on load.
-    updateMainVariant();
+    refresh();
   });
 }
 

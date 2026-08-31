@@ -29,13 +29,7 @@
       "social_tiktok": "",
       "social_youtube": "",
       "cart_type": "drawer",
-      "enable_split_sizing": true,
-      "split_sizing_label": "Need two different sizes?",
-      "split_sizing_note": "One shoe from each size — a premium applies since it uses two separate pairs.",
-      "split_sizing_premium_percent": 20,
-      "split_sizing_option_name": "Order Type",
-      "split_sizing_premium_value": "Split Pair (+20%)",
-      "split_sizing_fee_note": ""
+      "split_sizing_note": "One shoe from each size — every Doublestep pair ships as a true split pair."
     }
   }
 }
