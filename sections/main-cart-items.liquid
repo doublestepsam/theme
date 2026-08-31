@@ -10,6 +10,18 @@
     <div class="product-main">
       <div>
         {%- for item in cart.items -%}
+          {%- assign pair_id = item.properties._pair_id -%}
+          {%- if pair_id != blank and item.variant.options contains 'Right' -%}
+            {%- continue -%}
+          {%- endif -%}
+          {%- assign line_keys = item.key -%}
+          {%- if pair_id != blank -%}
+            {%- for other in cart.items -%}
+              {%- if other.properties._pair_id == pair_id and other.key != item.key -%}
+                {%- assign line_keys = line_keys | append: ',' | append: other.key -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
           <div class="cart-line" style="grid-template-columns:110px 1fr auto;">
             <a href="{{ item.url }}" class="cart-line__image">
               {%- if item.image -%}
@@ -19,21 +31,23 @@
             <div>
               <a href="{{ item.url }}" class="cart-line__title">{{ item.product.title }}</a>
               {%- unless item.variant.title contains 'Default' -%}
-                <div class="cart-line__variant">{{ item.variant.title }}</div>
+                {%- assign variant_title = item.variant.title | remove: ' / Left' | remove: 'Left / ' -%}
+                <div class="cart-line__variant">{{ variant_title }}</div>
               {%- endunless -%}
               {%- if item.properties.size > 0 -%}
                 {%- for property in item.properties -%}
-                  {%- if property.last != blank -%}
+                  {%- assign first_char = property.first | slice: 0 -%}
+                  {%- if property.last != blank and first_char != '_' -%}
                     <div class="cart-line__property"><strong>{{ property.first }}:</strong> {{ property.last }}</div>
                   {%- endif -%}
                 {%- endfor -%}
               {%- endif -%}
-              <div class="cart-line__qty" data-qty-stepper data-line-key="{{ item.key }}">
+              <div class="cart-line__qty" data-qty-stepper data-line-key="{{ line_keys }}">
                 <button type="button" data-qty-minus aria-label="Decrease quantity">&minus;</button>
                 <input type="text" value="{{ item.quantity }}" aria-label="Quantity" inputmode="numeric">
                 <button type="button" data-qty-plus aria-label="Increase quantity">&plus;</button>
               </div>
-              <div class="cart-line__remove" data-line-remove data-line-key="{{ item.key }}" role="button" tabindex="0">Remove</div>
+              <div class="cart-line__remove" data-line-remove data-line-key="{{ line_keys }}" role="button" tabindex="0">Remove</div>
             </div>
             <div style="font-weight:800;">{{ item.final_line_price | money }}</div>
           </div>

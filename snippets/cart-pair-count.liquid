@@ -1,0 +1,13 @@
+{%- comment -%}
+  A split pair is two line items (a left shoe and a $0 right shoe), so
+  cart.item_count double-counts it. Outputs the count a shopper expects.
+{%- endcomment -%}
+{%- liquid
+  assign count = cart.item_count
+  for item in cart.items
+    if item.properties._pair_id != blank and item.variant.options contains 'Right'
+      assign count = count | minus: item.quantity
+    endif
+  endfor
+  echo count
+-%}

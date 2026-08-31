@@ -99,25 +99,45 @@ function initCartDrawer() {
 }
 
 function refreshCartDrawer() {
-  return fetch('/?sections=cart-drawer')
+  // The badge lives in the header section, so pull both: its count is
+  // pair-aware and cannot be derived from the drawer markup alone.
+  return fetch('/?sections=cart-drawer,header')
     .then(function (res) { return res.json(); })
     .then(function (data) {
-      var html = data['cart-drawer'];
-      if (!html) return;
       var temp = document.createElement('div');
-      temp.innerHTML = html;
-      var newInner = temp.querySelector('[data-cart-drawer-inner]');
-      var current = document.querySelector('[data-cart-drawer-inner]');
-      if (newInner && current) current.innerHTML = newInner.innerHTML;
-      var newCount = temp.querySelector('[data-cart-count]');
-      document.querySelectorAll('[data-cart-count]').forEach(function (el) {
-        if (newCount) el.textContent = newCount.textContent;
-      });
+
+      if (data['cart-drawer']) {
+        temp.innerHTML = data['cart-drawer'];
+        var newInner = temp.querySelector('[data-cart-drawer-inner]');
+        var current = document.querySelector('[data-cart-drawer-inner]');
+        if (newInner && current) current.innerHTML = newInner.innerHTML;
+      }
+
+      if (data['header']) {
+        temp.innerHTML = data['header'];
+        var newCartLink = temp.querySelector('[data-cart-open]');
+        var cartLink = document.querySelector('[data-cart-open]');
+        if (newCartLink && cartLink) cartLink.innerHTML = newCartLink.innerHTML;
+      }
+
       initQtySteppers();
     });
 }
 
 /* ---------------- Quantity steppers (cart lines + product form) ---------------- */
+
+// A cart row may stand for a split pair, in which case data-line-key holds both
+// line keys and they have to move together or the cart is left half a pair.
+function updateCartLines(lineKeys, quantity) {
+  var updates = {};
+  lineKeys.split(',').forEach(function (key) { updates[key] = quantity; });
+  return fetch('/cart/update.js', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ updates: updates })
+  }).then(refreshCartDrawer);
+}
+
 function initQtySteppers() {
   document.querySelectorAll('[data-qty-stepper]').forEach(function (stepper) {
     if (stepper.dataset.bound) return;
@@ -128,14 +148,9 @@ function initQtySteppers() {
     if (!input) return;
 
     function commit() {
-      var key = stepper.dataset.lineKey;
-      if (!key) return; // product-form stepper, no cart update needed
-      fetch('/cart/change.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: key, quantity: parseInt(input.value || '0', 10) })
-      })
-        .then(function () { return refreshCartDrawer(); })
+      var keys = stepper.dataset.lineKey;
+      if (!keys) return; // product-form stepper, no cart update needed
+      updateCartLines(keys, parseInt(input.value || '0', 10))
         .catch(function (err) { console.error('Cart update failed', err); });
     }
 
@@ -151,13 +166,10 @@ function initQtySteppers() {
   });
 
   document.querySelectorAll('[data-line-remove]').forEach(function (btn) {
+    if (btn.dataset.bound) return;
+    btn.dataset.bound = 'true';
     btn.addEventListener('click', function () {
-      fetch('/cart/change.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: btn.dataset.lineKey, quantity: 0 })
-      })
-        .then(function () { return refreshCartDrawer(); })
+      updateCartLines(btn.dataset.lineKey, 0)
         .catch(function (err) { console.error('Remove failed', err); });
     });
   });
