@@ -65,7 +65,7 @@
       {%- if product.vendor != blank or gender_label != blank -%}
         <div class="product-info__vendor">
           {%- if gender_label != blank -%}
-            <a href="{{ routes.all_products_collection_url }}/{{ gender_tag }}">{{ gender_label }}</a>
+            <a href="{{ routes.collections_url }}/{{ gender_tag }}">{{ gender_label }}</a>
             {%- if product.vendor != blank %} / {% endif -%}
           {%- endif -%}
           {{- product.vendor -}}
