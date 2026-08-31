@@ -1,17 +1,5 @@
 {
   "sections": {
-    "hero": {
-      "type": "image-banner",
-      "settings": {
-        "eyebrow": "New Season",
-        "heading": "Gear Up For Fall",
-        "subheading": "Top brands, unbeatable prices, and gear that keeps up with you.",
-        "button_label": "Shop Now",
-        "button_link": "/collections/all",
-        "button_label_2": "Find a Store",
-        "button_link_2": "/pages/store-locator"
-      }
-    },
     "categories": {
       "type": "collection-list",
       "settings": {
@@ -20,13 +8,44 @@
         "background": "none"
       },
       "blocks": {
-        "tile-1": { "type": "tile", "settings": { "title": "Footwear" } },
-        "tile-2": { "type": "tile", "settings": { "title": "Apparel" } },
-        "tile-3": { "type": "tile", "settings": { "title": "Fitness" } },
-        "tile-4": { "type": "tile", "settings": { "title": "Outdoor" } },
-        "tile-5": { "type": "tile", "settings": { "title": "Team Sports" } }
+        "tile-1": {
+          "type": "tile",
+          "settings": {
+            "title": "Footwear"
+          }
+        },
+        "tile-2": {
+          "type": "tile",
+          "settings": {
+            "title": "Apparel"
+          }
+        },
+        "tile-3": {
+          "type": "tile",
+          "settings": {
+            "title": "Fitness"
+          }
+        },
+        "tile-4": {
+          "type": "tile",
+          "settings": {
+            "title": "Outdoor"
+          }
+        },
+        "tile-5": {
+          "type": "tile",
+          "settings": {
+            "title": "Team Sports"
+          }
+        }
       },
-      "block_order": ["tile-1", "tile-2", "tile-3", "tile-4", "tile-5"]
+      "block_order": [
+        "tile-1",
+        "tile-2",
+        "tile-3",
+        "tile-4",
+        "tile-5"
+      ]
     },
     "bestsellers": {
       "type": "featured-collection",
@@ -58,5 +77,10 @@
       }
     }
   },
-  "order": ["hero", "categories", "bestsellers", "promo", "sale"]
+  "order": [
+    "categories",
+    "bestsellers",
+    "promo",
+    "sale"
+  ]
 }
