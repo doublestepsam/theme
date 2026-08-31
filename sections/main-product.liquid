@@ -80,9 +80,6 @@
           {%- endif -%}
           {%- if option_down contains 'size' -%}
             <div class="split-size-fields" data-split-fields data-option-position="{{ option.position }}" data-side-position="{{ side_position }}">
-              {%- if settings.split_sizing_note != blank -%}
-                <p class="split-size-note">{{ settings.split_sizing_note }}</p>
-              {%- endif -%}
               <div class="variant-picker" data-split-left>
                 <span class="variant-picker__label">Left shoe size</span>
                 <div class="variant-swatches">

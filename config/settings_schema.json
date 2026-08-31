@@ -55,8 +55,7 @@
     "name": "Split sizing",
     "settings": [
       { "type": "header", "content": "Split-size shoe orders" },
-      { "type": "paragraph", "content": "Every order is a split pair: shoppers pick a left and a right size on any product with a Size option. Both sides must be in stock; the line item bills against the larger size and records both sizes as line-item properties." },
-      { "type": "textarea", "id": "split_sizing_note", "label": "Helper text", "default": "One shoe from each size — every Doublestep pair ships as a true split pair." }
+      { "type": "paragraph", "content": "Every order is a split pair: shoppers pick a left and a right size on any product with a Size option. Both sides must be in stock; the line item bills against the larger size and records both sizes as line-item properties." }
     ]
   },
   {
