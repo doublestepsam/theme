@@ -1,6 +1,19 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
 
+  # Men's and women's are separate products sharing a model, so the gender
+  # belongs in the navigation line rather than repeated in the heading.
+  assign gender_label = ''
+  assign gender_tag = ''
+  if product.handle contains '-womens'
+    assign gender_label = "Women's"
+    assign gender_tag = 'womens'
+  elsif product.handle contains '-mens'
+    assign gender_label = "Men's"
+    assign gender_tag = 'mens'
+  endif
+  assign display_title = product.title | remove: " - Men's" | remove: " - Women's"
+
   assign has_size_option = false
   assign side_position = 0
   # Each variant is one shoe, so a pair costs two of them. Until single-shoe
@@ -49,10 +62,16 @@
     </div>
 
     <div class="product-info" data-product-info>
-      {%- if product.vendor != blank -%}
-        <div class="product-info__vendor">{{ product.vendor }}</div>
+      {%- if product.vendor != blank or gender_label != blank -%}
+        <div class="product-info__vendor">
+          {%- if gender_label != blank -%}
+            <a href="{{ routes.all_products_collection_url }}/{{ gender_tag }}">{{ gender_label }}</a>
+            {%- if product.vendor != blank %} / {% endif -%}
+          {%- endif -%}
+          {{- product.vendor -}}
+        </div>
       {%- endif -%}
-      <h1>{{ product.title }}</h1>
+      <h1>{{ display_title }}</h1>
 
       <div class="product-info__price" data-price-wrapper>
         {%- if current_variant.compare_at_price > current_variant.price -%}

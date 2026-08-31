@@ -666,6 +666,8 @@ p { margin: 0 0 1em; }
 .product-gallery__thumbs img.is-active { border-color: var(--color-navy); }
 
 .product-info__vendor { font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.8rem; color: var(--color-text-light); margin-bottom: 6px; }
+.product-info__vendor a { color: var(--color-navy); text-decoration: underline; text-underline-offset: 2px; }
+.product-info__vendor a:hover { color: var(--color-red); }
 .product-info__price { font-size: 1.4rem; font-weight: 800; margin: 14px 0 22px; display: flex; gap: 12px; align-items: baseline; }
 .product-info__price .price__compare { font-size: 0.7em; }
 
