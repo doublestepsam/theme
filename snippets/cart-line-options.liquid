@@ -1,0 +1,45 @@
+{%- comment -%}
+  Option summary for a cart row.
+
+  With pair_item, the row stands for a split pair: the shared options (colour)
+  are named once and the two sizes are read off the two variants, which is the
+  only source that cannot disagree with what is actually being bought.
+
+  Accepts: item, pair_item (optional)
+{%- endcomment -%}
+{%- liquid
+  assign size_index = -1
+  assign shared_values = ''
+  for option_name in item.product.options
+    assign option_down = option_name | downcase
+    if option_down contains 'size'
+      if size_index == -1
+        assign size_index = forloop.index0
+      endif
+    elsif option_down != 'side'
+      assign value = item.variant.options[forloop.index0]
+      if shared_values == ''
+        assign shared_values = value
+      else
+        assign shared_values = shared_values | append: ' / ' | append: value
+      endif
+    endif
+  endfor
+-%}
+{%- if pair_item == blank -%}
+  {%- unless item.variant.title contains 'Default' -%}
+    <div class="cart-line__variant">{{ item.variant.title }}</div>
+  {%- endunless -%}
+{%- else -%}
+  {%- if shared_values != blank -%}
+    <div class="cart-line__variant">{{ shared_values }}</div>
+  {%- endif -%}
+  {%- if size_index >= 0 -%}
+    <div class="cart-line__property">
+      <strong>Left:</strong> size {{ item.variant.options[size_index] }}
+    </div>
+    <div class="cart-line__property">
+      <strong>Right:</strong> size {{ pair_item.variant.options[size_index] }}
+    </div>
+  {%- endif -%}
+{%- endif -%}

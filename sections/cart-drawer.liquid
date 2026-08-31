@@ -22,9 +22,11 @@
           {%- endif -%}
           {%- assign line_keys = item.key -%}
           {%- assign line_price = item.final_line_price -%}
+          {%- assign pair_item = nil -%}
           {%- if pair_id != blank -%}
             {%- for other in cart.items -%}
               {%- if other.properties._pair_id == pair_id and other.key != item.key -%}
+                {%- assign pair_item = other -%}
                 {%- assign line_keys = line_keys | append: ',' | append: other.key -%}
                 {%- assign line_price = line_price | plus: other.final_line_price -%}
               {%- endif -%}
@@ -38,11 +40,12 @@
             </a>
             <div>
               <a href="{{ item.url }}" class="cart-line__title">{{ item.product.title }}</a>
-              {%- unless item.variant.title contains 'Default' -%}
-                {%- assign variant_title = item.variant.title | remove: ' / Left' | remove: 'Left / ' -%}
-                <div class="cart-line__variant">{{ variant_title }}</div>
-              {%- endunless -%}
-              {%- if item.properties.size > 0 -%}
+              {%- render 'cart-line-options', item: item, pair_item: pair_item -%}
+              {%- comment -%}
+                A pair row already names both sizes; its remaining properties
+                are internal bookkeeping, so only unpaired rows list them.
+              {%- endcomment -%}
+              {%- if pair_id == blank and item.properties.size > 0 -%}
                 {%- for property in item.properties -%}
                   {%- assign first_char = property.first | slice: 0 -%}
                   {%- if property.last != blank and first_char != '_' -%}
