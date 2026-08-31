@@ -1,51 +1,14 @@
 {
   "sections": {
-    "categories": {
-      "type": "collection-list",
+    "all-products": {
+      "type": "featured-collection",
       "settings": {
-        "eyebrow": "Shop By",
-        "heading": "Category",
+        "eyebrow": "Shop",
+        "heading": "All Shoes",
+        "collection": "all",
+        "products_to_show": 12,
         "background": "none"
-      },
-      "blocks": {
-        "tile-1": {
-          "type": "tile",
-          "settings": {
-            "title": "Footwear"
-          }
-        },
-        "tile-2": {
-          "type": "tile",
-          "settings": {
-            "title": "Apparel"
-          }
-        },
-        "tile-3": {
-          "type": "tile",
-          "settings": {
-            "title": "Fitness"
-          }
-        },
-        "tile-4": {
-          "type": "tile",
-          "settings": {
-            "title": "Outdoor"
-          }
-        },
-        "tile-5": {
-          "type": "tile",
-          "settings": {
-            "title": "Team Sports"
-          }
-        }
-      },
-      "block_order": [
-        "tile-1",
-        "tile-2",
-        "tile-3",
-        "tile-4",
-        "tile-5"
-      ]
+      }
     },
     "bestsellers": {
       "type": "featured-collection",
@@ -78,7 +41,7 @@
     }
   },
   "order": [
-    "categories",
+    "all-products",
     "bestsellers",
     "promo",
     "sale"
