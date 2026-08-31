@@ -14,9 +14,8 @@
         fetchpriority="high"
       >
     {%- else -%}
-      {%- comment -%} ponytail: hotlinked placeholder, upload a real image in the customizer {%- endcomment -%}
       <img
-        src="https://images.unsplash.com/photo-1766970096346-937852c7d350?w=1600&h=1000&fit=crop&auto=format&q=80"
+        src="{{ 'hero-gradient.png' | asset_url }}"
         alt="Runner's legs in motion on a track"
         width="1600"
         height="1000"
