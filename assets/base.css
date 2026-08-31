@@ -317,6 +317,31 @@ p { margin: 0 0 1em; }
 .hero__subheading { font-size: 1.05rem; margin-bottom: 1.5em; max-width: 480px; opacity: 0.92; }
 .hero__actions { display: flex; gap: 14px; flex-wrap: wrap; }
 
+/* Tall, bottom-anchored variant used by the homepage hero. */
+.hero--tall {
+  height: 76vh;
+  min-height: 480px;
+  align-items: flex-end;
+}
+.hero--tall .hero__media img { opacity: 0.45; }
+.hero--tall .hero__content {
+  max-width: var(--page-width);
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+}
+.hero--tall .hero__heading { max-width: 14ch; }
+.hero--tall .hero__subheading { max-width: 46ch; }
+.hero--tall .hero__subheading p { margin-bottom: 0.9em; }
+.hero--tall .hero__subheading p:last-child { margin-bottom: 0; }
+.hero__fade {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 120px;
+  background: linear-gradient(to top, var(--color-navy), transparent);
+  z-index: 1;
+}
+
 @media screen and (max-width: 749px) {
   .hero { min-height: 380px; }
   .hero__scrim { background: linear-gradient(180deg, rgba(7,21,39,0.35) 0%, rgba(7,21,39,0.92) 85%); }
