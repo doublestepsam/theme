@@ -512,9 +512,6 @@ p { margin: 0 0 1em; }
 /* ---------- Page ---------- */
 
 .page-main__title--small { font-size: clamp(1.4rem, 2.6vw, 2.1rem); }
-.page-main--center { text-align: center; }
-/* Centred text needs a measure — full-width centred lines are unreadable. */
-.page-main--center .rte { max-width: 62ch; margin-inline: auto; }
 
 /* ---------- Forms ---------- */
 

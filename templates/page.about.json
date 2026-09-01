@@ -4,10 +4,11 @@
       "type": "main-page",
       "settings": {
         "show_title": true,
-        "title_size": "small",
-        "text_align": "center"
+        "title_size": "small"
       }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }
