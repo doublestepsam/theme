@@ -204,7 +204,6 @@ function initVariantPicker() {
     var splitFields = form.querySelector('[data-split-fields]');
     var splitLeft = form.querySelector('[data-split-left]');
     var splitRight = form.querySelector('[data-split-right]');
-    var splitAvailability = form.querySelector('[data-split-availability]');
     // Every Doublestep order is a split pair, so the size option is always
     // chosen as two independent selects rather than a single swatch picker.
     var isSplit = !!(splitFields && splitLeft && splitRight);
@@ -327,15 +326,32 @@ function initVariantPicker() {
       return selectedSwatch ? selectedSwatch.dataset.value : '';
     }
 
-    function resetSplitState(message, isError) {
+    function resetSplitState() {
       setAddButtonState(false, 'Select both sizes');
       removeSplitPropertyInputs();
       delete form.dataset.pairItems;
       delete form.dataset.pairProperties;
-      if (splitAvailability) {
-        splitAvailability.textContent = message || '';
-        splitAvailability.className = 'split-size-availability' + (isError ? ' is-error' : '');
-      }
+    }
+
+    // Sizes with no stock for the current colour are struck through and
+    // disabled, so an unavailable pair can never be selected in the first place.
+    function markSideAvailability(container, sideValue) {
+      container.querySelectorAll('[data-variant-value]').forEach(function (swatch) {
+        var options = selected.slice();
+        options[sizePos - 1] = swatch.dataset.value;
+        if (sidePos) options[sidePos - 1] = sideValue;
+        var variant = findVariant(options);
+        var available = !!(variant && variant.available);
+        swatch.classList.toggle('is-unavailable', !available);
+        swatch.disabled = !available;
+        if (!available) swatch.classList.remove('is-selected');
+      });
+    }
+
+    function refreshSizeAvailability() {
+      if (!isSplit) return;
+      markSideAvailability(splitLeft, 'Left');
+      markSideAvailability(splitRight, 'Right');
     }
 
     function evaluateSplitSelection() {
@@ -345,7 +361,7 @@ function initVariantPicker() {
       if (!leftVal || !rightVal) {
         // Colour is usually picked before sizes, so still swap the photo.
         updateFeaturedImage(findVariant(selected));
-        resetSplitState('');
+        resetSplitState();
         return;
       }
 
@@ -361,12 +377,8 @@ function initVariantPicker() {
       var leftVariant = findVariant(leftOptions);
       var rightVariant = findVariant(rightOptions);
 
-      var problems = [];
-      if (!leftVariant || !leftVariant.available) problems.push('Left size ' + leftVal + ' is unavailable');
-      if (!rightVariant || !rightVariant.available) problems.push('Right size ' + rightVal + ' is unavailable');
-
-      if (problems.length) {
-        resetSplitState(problems.join(' \u00b7 '), true);
+      if (!leftVariant || !leftVariant.available || !rightVariant || !rightVariant.available) {
+        resetSplitState();
         return;
       }
 
@@ -399,16 +411,15 @@ function initVariantPicker() {
         setSplitPropertyInputs(leftVal, rightVal);
       }
       setAddButtonState(true, 'Add to Cart');
-
-      if (splitAvailability) {
-        splitAvailability.textContent = 'Both sizes in stock \u2014 ready to add.';
-        splitAvailability.className = 'split-size-availability is-ok';
-      }
     }
 
     function refresh() {
-      if (isSplit) evaluateSplitSelection();
-      else updateMainVariant();
+      if (isSplit) {
+        refreshSizeAvailability();
+        evaluateSplitSelection();
+      } else {
+        updateMainVariant();
+      }
     }
 
     if (isSplit) {
