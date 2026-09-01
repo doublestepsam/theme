@@ -16,6 +16,8 @@
 
   {{ content_for_header }}
 
+  {% render 'meta-tags' %}
+
   {%- style -%}
     {{ settings.font_heading | font_face: font_display: 'swap' }}
     {{ settings.font_body | font_face: font_display: 'swap' }}

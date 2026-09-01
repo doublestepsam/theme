@@ -1,0 +1,90 @@
+{%- comment -%}
+  Social share tags and structured data.
+
+  Shopify's content_for_header emits only the og:image* tags, and this theme
+  shipped no JSON-LD at all, so everything else is built here.
+
+  A variant is one shoe when a product carries a Side option, so every price
+  quoted to a crawler is doubled to match the pair price shown on the page.
+{%- endcomment -%}
+{%- liquid
+  assign og_title = page_title | default: shop.name
+  assign og_description = page_description | default: shop.description | default: shop.name
+
+  assign og_type = 'website'
+  case request.page_type
+    when 'product'
+      assign og_type = 'product'
+    when 'article'
+      assign og_type = 'article'
+  endcase
+
+  assign price_multiplier = 1
+  if product.options contains 'Side'
+    assign price_multiplier = 2
+  endif
+  assign schema_price = product.price | times: price_multiplier | divided_by: 100.0
+-%}
+<meta property="og:site_name" content="{{ shop.name | escape }}">
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:title" content="{{ og_title | escape }}">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:description" content="{{ og_description | escape }}">
+{%- if request.page_type == 'product' -%}
+  <meta property="og:price:amount" content="{{ schema_price }}">
+  <meta property="og:price:currency" content="{{ cart.currency.iso_code }}">
+{%- endif -%}
+
+{%- comment -%} Twitter falls back to og:image, so no image tag is needed here. {%- endcomment -%}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ og_title | escape }}">
+<meta name="twitter:description" content="{{ og_description | escape }}">
+
+{%- if request.page_type == 'product' -%}
+  {%- assign product_image = product.featured_media.preview_image -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": {{ product.title | json }},
+      "url": {{ canonical_url | json }},
+      {% if product_image %}"image": [{{ product_image | image_url: width: 1200 | prepend: "https:" | json }}],{% endif %}
+      "description": {{ product.description | strip_html | truncate: 300 | json }},
+      {% if product.vendor != blank %}"brand": { "@type": "Brand", "name": {{ product.vendor | json }} },{% endif %}
+      {% if product.selected_or_first_available_variant.sku != blank %}"sku": {{ product.selected_or_first_available_variant.sku | json }},{% endif %}
+      "offers": {
+        "@type": "Offer",
+        "url": {{ canonical_url | json }},
+        "price": {{ schema_price }},
+        "priceCurrency": {{ cart.currency.iso_code | json }},
+        "availability": "https://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}"
+      }
+    }
+  </script>
+{%- endif -%}
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | append: routes.root_url | json }}
+    {%- if settings.logo != blank -%}
+      ,"logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }}
+    {%- endif -%}
+  }
+</script>
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ shop.name | json }},
+    "url": {{ shop.url | append: routes.root_url | json }},
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {{ shop.url | append: routes.search_url | append: "?q={search_term_string}" | json }},
+      "query-input": "required name=search_term_string"
+    }
+  }
+</script>
