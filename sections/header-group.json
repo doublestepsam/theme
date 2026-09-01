@@ -14,7 +14,7 @@
     "announcement-bar": {
       "type": "announcement-bar",
       "settings": {
-        "text": "Use code EARLYBIRD for 10% off at checkout",
+        "text": "Use code EARLYBIRD for 10% off at checkout · Free shipping on orders over $200 ·  Free 30-day returns",
         "link": ""
       }
     },
