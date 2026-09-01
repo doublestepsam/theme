@@ -1,10 +1,14 @@
 {%- liquid
   assign show_title = section.settings.show_title
+  assign centered = false
+  if section.settings.text_align == 'center'
+    assign centered = true
+  endif
 -%}
 {%- if show_title or page.content != blank -%}
-  <div class="page-width section-padding">
+  <div class="page-width section-padding page-main{% if centered %} page-main--center{% endif %}">
     {%- if show_title -%}
-      <h1>{{ page.title }}</h1>
+      <h1 class="page-main__title{% if section.settings.title_size == 'small' %} page-main__title--small{% endif %}">{{ page.title }}</h1>
     {%- endif -%}
     {%- if page.content != blank -%}
       <div class="rte">{{ page.content }}</div>
@@ -16,7 +20,27 @@
 {
   "name": "Page",
   "settings": [
-    { "type": "checkbox", "id": "show_title", "label": "Show page title", "default": true }
+    { "type": "checkbox", "id": "show_title", "label": "Show page title", "default": true },
+    {
+      "type": "select",
+      "id": "title_size",
+      "label": "Title size",
+      "options": [
+        { "value": "large", "label": "Large" },
+        { "value": "small", "label": "Small" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    }
   ]
 }
 {% endschema %}
