@@ -1,18 +1,28 @@
 <footer class="site-footer">
-  <div class="page-width site-footer__inner">
-    {%- if section.settings.menu.links.size > 0 -%}
-      <nav class="site-footer__nav" aria-label="Footer">
-        {%- for link in section.settings.menu.links -%}
-          <a href="{{ link.url }}">{{ link.title }}</a>
-        {%- endfor -%}
-      </nav>
-    {%- endif -%}
+  <div class="page-width site-footer__top{% if section.blocks.size == 0 %} site-footer__top--bare{% endif %}">
+    <div>
+      <div class="site-footer__logo">{{ shop.name }}</div>
+      <p style="max-width:280px; font-size:0.88rem; opacity:0.8;">
+        {{ section.settings.about_text | default: 'Two feet. Two sizes. One perfect fit.' }}
+      </p>
+      {% render 'social-icons' %}
+    </div>
 
-    {% render 'social-icons' %}
+    {%- for block in section.blocks -%}
+      <div {{ block.shopify_attributes }}>
+        <div class="site-footer__heading">{{ block.settings.heading }}</div>
+        <ul class="site-footer__links">
+          {%- for link in block.settings.menu.links -%}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endfor -%}
+  </div>
 
-    <p class="site-footer__copyright">
-      &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.
-    </p>
+  <div class="site-footer__bottom page-width">
+    <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</span>
+    <span>Powered by Shopify</span>
   </div>
 </footer>
 
@@ -20,7 +30,39 @@
 {
   "name": "Footer",
   "settings": [
-    { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" }
-  ]
+    {
+      "type": "textarea",
+      "id": "about_text",
+      "label": "About text",
+      "default": "Two feet. Two sizes. One perfect fit."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_column",
+      "name": "Link column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Shop"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "default": {
+    "blocks": [
+      { "type": "link_column", "settings": { "heading": "Shop" } },
+      { "type": "link_column", "settings": { "heading": "Help" } },
+      { "type": "link_column", "settings": { "heading": "Company" } }
+    ]
+  }
 }
 {% endschema %}
