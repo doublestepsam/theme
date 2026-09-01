@@ -509,6 +509,46 @@ p { margin: 0 0 1em; }
 }
 .newsletter__form button:hover { background: var(--color-red-dark); }
 
+/* ---------- Forms ---------- */
+
+.contact-form { max-width: 640px; }
+.contact-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media screen and (max-width: 599px) {
+  .contact-form__row { grid-template-columns: 1fr; }
+}
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--color-border);
+  background: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+.field input:focus,
+.field textarea:focus { border-color: var(--color-navy); outline: none; }
+.field textarea { resize: vertical; }
+
+.form-status {
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.form-status--success { background: #E8F5EC; color: #0F7A3D; }
+.form-status--error { background: #FDECEC; color: var(--color-red); }
+.form-status--error ul { margin: 0; padding-left: 18px; font-weight: 500; }
+
 /* ---------- Footer ---------- */
 
 .site-footer {
