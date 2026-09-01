@@ -193,6 +193,22 @@ p { margin: 0 0 1em; }
 .btn--sm { padding: 10px 18px; font-size: 0.75rem; }
 .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
 
+/* ---------- Announcement bar ---------- */
+
+.announcement-bar {
+  background: var(--color-navy-dark);
+  color: #fff;
+}
+.announcement-bar__inner {
+  padding: 9px 24px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.announcement-bar__inner a { text-decoration: underline; text-underline-offset: 2px; }
+
 /* ---------- Header ---------- */
 
 .site-header {
