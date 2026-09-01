@@ -32,16 +32,19 @@
       <div class="hero__subheading">{{ section.settings.text }}</div>
     {%- endif -%}
     {%- if section.settings.button_label != blank or section.settings.button_label_2 != blank -%}
-      {%- if section.settings.cta_label != blank -%}
-        <p class="hero__cta-label">{{ section.settings.cta_label }}</p>
-      {%- endif -%}
-      <div class="hero__actions">
-        {%- if section.settings.button_label != blank -%}
-          <a href="{{ section.settings.button_link }}" class="btn btn--primary">{{ section.settings.button_label }}</a>
+      {%- comment -%} Wrapper hugs the button row so the label centres over it, not the hero. {%- endcomment -%}
+      <div class="hero__cta">
+        {%- if section.settings.cta_label != blank -%}
+          <p class="hero__cta-label">{{ section.settings.cta_label }}</p>
         {%- endif -%}
-        {%- if section.settings.button_label_2 != blank -%}
-          <a href="{{ section.settings.button_link_2 }}" class="btn btn--outline-white">{{ section.settings.button_label_2 }}</a>
-        {%- endif -%}
+        <div class="hero__actions">
+          {%- if section.settings.button_label != blank -%}
+            <a href="{{ section.settings.button_link }}" class="btn btn--primary">{{ section.settings.button_label }}</a>
+          {%- endif -%}
+          {%- if section.settings.button_label_2 != blank -%}
+            <a href="{{ section.settings.button_link_2 }}" class="btn btn--outline-white">{{ section.settings.button_label_2 }}</a>
+          {%- endif -%}
+        </div>
       </div>
     {%- endif -%}
   </div>

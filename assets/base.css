@@ -334,8 +334,10 @@ p { margin: 0 0 1em; }
 .hero--tall .hero__subheading { max-width: 46ch; }
 .hero--tall .hero__subheading p { margin-bottom: 0.9em; }
 .hero--tall .hero__subheading p:last-child { margin-bottom: 0; }
+.hero__cta { width: fit-content; max-width: 100%; }
 .hero__cta-label {
   margin: 28px 0 12px;
+  text-align: center;
   font-family: var(--font-heading-family, 'Arial Black', Arial, sans-serif);
   font-weight: 900;
   text-transform: uppercase;
