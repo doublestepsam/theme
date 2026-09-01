@@ -35,7 +35,9 @@
       <textarea id="ContactBody" name="contact[body]" rows="8" required>{{ form.body }}</textarea>
     </div>
 
-    <button type="submit" class="btn btn--primary">{{ section.settings.button_label | default: 'Send message' }}</button>
+    <div class="contact-page__actions">
+      <button type="submit" class="btn btn--primary">{{ section.settings.button_label | default: 'Send message' }}</button>
+    </div>
   {%- endform -%}
 </div>
 

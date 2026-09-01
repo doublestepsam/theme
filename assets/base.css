@@ -514,6 +514,7 @@ p { margin: 0 0 1em; }
 /* Not .contact-form: Shopify's {% form %} tag puts that class on every
    customer/contact form itself, including the newsletter's. */
 .contact-page { max-width: 640px; }
+.contact-page__actions { margin-top: 8px; text-align: center; }
 .contact-page__row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media screen and (max-width: 599px) {
   .contact-page__row { grid-template-columns: 1fr; }

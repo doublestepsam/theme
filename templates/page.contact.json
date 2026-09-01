@@ -2,12 +2,17 @@
   "sections": {
     "main": {
       "type": "main-page",
-      "settings": {}
+      "settings": {
+        "show_title": false
+      }
     },
     "contact_form": {
       "type": "contact-form",
       "settings": {}
     }
   },
-  "order": ["main", "contact_form"]
+  "order": [
+    "main",
+    "contact_form"
+  ]
 }
