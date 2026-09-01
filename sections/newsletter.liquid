@@ -1,6 +1,6 @@
 <div class="section-padding bg-navy newsletter-section">
   <div class="page-width newsletter">
-    <h3 class="eyebrow" style="color:#fff;">Stay in touch</h3>
+    <h2>{{ section.settings.heading | default: 'Stay in touch' }}</h2>
     <p style="opacity:0.85; max-width:480px; margin:0 auto;">{{ section.settings.subheading }}</p>
 
     {%- form 'customer', id: 'NewsletterForm' -%}
