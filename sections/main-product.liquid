@@ -12,7 +12,7 @@
     assign gender_label = "Men's"
     assign gender_tag = 'mens'
   endif
-  assign display_title = product.title | remove: " - Men's" | remove: " - Women's"
+  assign display_title = product.title | remove: " - Men's" | remove: " - Women's" | remove: " Men's" | remove: " Women's"
 
   # The same model in the other gender is a separate product, so offer it —
   # otherwise a shopper who lands on the wrong one has to start over.
