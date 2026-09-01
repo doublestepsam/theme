@@ -293,6 +293,45 @@ p { margin: 0 0 1em; }
 @media screen and (max-width: 989px) {
   .site-nav { display: none; }
   .mobile-nav-toggle { display: inline-flex; }
+
+  /* The toggle sets .is-open; without this the menu is unreachable on a phone. */
+  .site-nav.is-open {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 4px 24px 12px;
+    background: #fff;
+    border-bottom: 3px solid var(--color-navy);
+    z-index: 90;
+  }
+  .site-nav.is-open .site-nav__link {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-border);
+    border-left: none;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  /* 19 characters of Archivo Black at 1.5rem does not fit beside four icons. */
+  .site-header__logo { font-size: 1rem; }
+  .site-header__inner { gap: 12px; padding: 10px 16px; }
+  .site-header__icons { gap: 14px; }
+
+  /* Under 16px, iOS Safari zooms the page when a field is focused. */
+  .field input,
+  .field textarea,
+  .newsletter__form input { font-size: 16px; }
+
+  /* Fixed height plus overflow:hidden clips the hero copy on a small screen. */
+  .hero--tall { height: auto; min-height: 70vh; }
+  .hero--tall .hero__content { padding-top: 96px; padding-bottom: 40px; }
+  .hero--tall .hero__heading,
+  .hero--tall .hero__subheading { max-width: none; }
 }
 
 /* ---------- Hero / Image banner ---------- */
@@ -808,8 +847,8 @@ p { margin: 0 0 1em; }
 .qty-selector button { width: 40px; height: 48px; background: none; border: none; font-weight: 800; font-size: 1.1rem; }
 .qty-selector input { width: 44px; height: 48px; text-align: center; border: none; border-left: 2px solid var(--color-border); border-right: 2px solid var(--color-border); font-weight: 700; }
 
-.product-form__buttons { display: flex; align-items: stretch; gap: 12px; margin: 24px 0; }
-.product-form__buttons .btn { flex: 1; height: 52px; }
+.product-form__buttons { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; margin: 24px 0; }
+.product-form__buttons .btn { flex: 1 1 220px; height: 52px; }
 
 .product-info__description { border-top: 1px solid var(--color-border); padding-top: 20px; margin-top: 10px; font-size: 0.95rem; }
 
