@@ -334,6 +334,15 @@ p { margin: 0 0 1em; }
 .hero--tall .hero__subheading { max-width: 46ch; }
 .hero--tall .hero__subheading p { margin-bottom: 0.9em; }
 .hero--tall .hero__subheading p:last-child { margin-bottom: 0; }
+.hero__cta-label {
+  margin: 28px 0 12px;
+  font-family: var(--font-heading-family, 'Arial Black', Arial, sans-serif);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 1.05rem;
+  color: #fff;
+}
 .hero__fade {
   position: absolute;
   bottom: 0; left: 0; right: 0;
