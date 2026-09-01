@@ -13,11 +13,16 @@
   "sections": {
     "announcement-bar": {
       "type": "announcement-bar",
-      "settings": {}
+      "settings": {
+        "text": "Use code EARLYBIRD for 10% off at checkout",
+        "link": ""
+      }
     },
     "header": {
       "type": "header",
-      "settings": {}
+      "settings": {
+        "main_menu": "main-menu"
+      }
     }
   },
   "order": [
